@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Climate Health Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-light: #d1fae5;
+            --primary-dark: #059669;
+            --secondary: #6366f1;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .navbar-brand i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-main);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        /* Layout */
+        .main-layout {
+            display: flex;
+            min-height: calc(100vh - 73px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            transition: transform 0.3s;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-right: 3px solid var(--primary);
+        }
+
+        .sidebar-item i {
+            font-size: 1.1rem;
+            width: 20px;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title i {
+            color: var(--primary);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        }
+
+        .grid-1 {
+            grid-template-columns: 1fr;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-main) 100%);
+        }
+
+        .card-header h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header.primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .card-header.secondary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+
+        .card-header.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .card-header.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .card-header.dark {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.primary {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .stat-icon.secondary {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .stat-icon.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .stat-icon.info {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-success {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                height: 100%;
+                z-index: 99;
+            }
+
+            .sidebar.active {
+                transform: translateX(260px);
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .loading {
+            animation: shimmer 2s infinite;
+            background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+            background-size: 1000px 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-heartbeat"></i>
+            <span>Climate Health Tracker</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="nav-btn" title="Notifications">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="nav-btn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="nav-btn" title="Profile">
+                <i class="fas fa-user-circle"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Reports</span>
+                </li>
+                <li class="sidebar-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Map View</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-users"></i>
+                    <span>Community</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics Dashboard
+                </h1>
+                <p class="page-subtitle">Comprehensive insights into climate health reports and trends</p>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-label">Total Reports</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon secondary">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value">892</div>
+                    <div class="stat-label">Verified Cases</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value">143</div>
+                    <div class="stat-label">Critical Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="stat-value">56</div>
+                    <div class="stat-label">Active Locations</div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header primary">
+                        <h5><i class="fas fa-virus"></i> Reports by Disease Type</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="diseaseChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header secondary">
+                        <h5><i class="fas fa-leaf"></i> Reports by Environmental Cause</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="causeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-1">
+                <div class="card">
+                    <div class="card-header info">
+                        <h5><i class="fas fa-chart-area"></i> Report Trends (Last 30 Days)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header warning">
+                        <h5><i class="fas fa-tasks"></i> Reports by Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header dark">
+                        <h5><i class="fas fa-map-pin"></i> Top 10 Affected Locations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="locationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sample data - replace with your Django template data
+        const diseaseData = [
+            {disease_type: 'respiratory', count: 245},
+            {disease_type: 'waterborne', count: 189},
+            {disease_type: 'vector', count: 156},
+            {disease_type: 'heat_related', count: 134},
+            {disease_type: 'skin', count: 98},
+            {disease_type: 'cardiovascular', count: 87},
+            {disease_type: 'mental_health', count: 76},
+            {disease_type: 'other', count: 62}
+        ];
+
+        const causeData = [
+            {environmental_cause: 'air_pollution', count: 312},
+            {environmental_cause: 'water_contamination', count: 267},
+            {environmental_cause: 'heatwave', count: 198},
+            {environmental_cause: 'flooding', count: 145},
+            {environmental_cause: 'drought', count: 89},
+            {environmental_cause: 'poor_sanitation', count: 76},
+            {environmental_cause: 'waste_pollution', count: 54},
+            {environmental_cause: 'climate_stress', count: 43}
+        ];
+
+        const statusData = [
+            {status: 'pending', count: 234},
+            {status: 'verified', count: 456},
+            {status: 'investigating', count: 189},
+            {status: 'resolved', count: 312},
+            {status: 'rejected', count: 56}
+        ];
+
+        const timeData = [
+            {date: 'Nov 1', count: 34}, {date: 'Nov 3', count: 42}, {date: 'Nov 5', count: 38},
+            {date: 'Nov 7', count: 51}, {date: 'Nov 9', count: 47}, {date: 'Nov 11', count: 55},
+            {date: 'Nov 13', count: 49}, {date: 'Nov 15', count: 58}, {date: 'Nov 17', count: 52},
+            {date: 'Nov 19', count: 61}, {date: 'Nov 21', count: 57}, {date: 'Nov 23', count: 64},
+            {date: 'Nov 25', count: 59}, {date: 'Nov 27', count: 67}, {date: 'Nov 29', count: 71}
+        ];
+
+        const locationData = [
+            {location: 'Mumbai', count: 134}, {location: 'Delhi', count: 128},
+            {location: 'Kolkata', count: 112}, {location: 'Chennai', count: 98},
+            {location: 'Bangalore', count: 87}, {location: 'Hyderabad', count: 76},
+            {location: 'Pune', count: 65}, {location: 'Ahmedabad', count: 54},
+            {location: 'Jaipur', count: 43}, {location: 'Lucknow', count: 38}
+        ];
+
+        // Chart configurations
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        // Disease Chart
+        const diseaseLabels = diseaseData.map(item => {
+            const types = {
+                'respiratory': 'Respiratory', 'waterborne': 'Waterborne',
+                'vector': 'Vector-borne', 'heat_related': 'Heat-related',
+                'skin': 'Skin', 'cardiovascular': 'Cardiovascular',
+                'mental_health': 'Mental Health', 'other': 'Other'
+            };
+            return types[item.disease_type] || item.disease_type;
+        });
+
+        new Chart(document.getElementById('diseaseChart'), {
+            type: 'doughnut',
+            data: {
+                labels: diseaseLabels,
+                datasets: [{
+                    data: diseaseData.map(item => item.count),
+                    backgroundColor: [
+                        '#10b981', '#3b82f6', '#f59e0b', '#ef4444',
+                        '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } }
+                }
+            }
+        });
+
+        // Cause Chart
+        const causeLabels = causeData.map(item => {
+            const causes = {
+                'air_pollution': 'Air Pollution', 'water_contamination': 'Water Contamination',
+                'heatwave': 'Heatwave', 'flooding': 'Flooding', 'drought': 'Drought',
+                'poor_sanitation': 'Poor Sanitation', 'waste_pollution': 'Waste Pollution',
+                'climate_stress': 'Climate Stress'
+            };
+            return causes[item.environmental_cause] || item.environmental_cause;
+        });
+
+        new Chart(document.getElementById('causeChart'), {
+            type: 'bar',
+            data: {
+                labels: causeLabels,
+                datasets: [{
+                    label: 'Reports',
+                    data: causeData.map(item => item.count),
+                    backgroundColor: '#6366f1',
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Trend Chart
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: timeData.map(item => item.date),
+                datasets: [{
+                    label: 'Reports',
+                    data: timeData.map(item => item.count),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Status Chart
+        const statusLabels = statusData.map(item => {
+            const statuses = {
+                'pending': 'Pending', 'verified': 'Verified',
+                'investigating': 'Investigating', 'resolved': 'Resolved',
+                'rejected': 'Rejected'
+            };
+            return statuses[item.status] || item.status;
+        });
+
+        new Chart(document.getElementById('statusChart'), {
+            type: 'pie',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusData.map(item => item.count),
+                    backgroundColor: ['#f59e0b', '#3b82f6', '#6366f1', '#10b981', '#ef4444'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } }
+                }
+            }
+        });
+
+        // Location Chart
+        new Chart(document.getElementById('locationChart'), {
+            type: 'bar',
+            data: {
+                labels: locationData.map(item => item.location),
+                datasets: [{
+                    label: 'Reports',
+                    data: locationData.map(item => item.count),
+                    backgroundColor: '#10b981',
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    y: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Mobile sidebar toggle
+        const sidebarToggle = document.querySelector('.nav-btn');
+        const sidebar = document.querySelector('.sidebar');
+    </script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Advisory - Climate Health Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #10b981;
+            --primary-light: #d1fae5;
+            --primary-dark: #059669;
+            --warning-color: #24ab27ff;
+            --warning-light: #fef3c7;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .icon-badge {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--warning-color), #3cfb88ff);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #fef3c7 0%, #9bfd8aff 100%);
+            padding: 1.75rem 2rem;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .card-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0e9231ff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 2.5rem 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label .required {
+            color: var(--danger-color);
+            margin-left: 0.25rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--warning-color);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .form-control:hover {
+            border-color: #d1d5db;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--warning-light);
+            color: #0e9210ff;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--warning-color), #fb923c);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #d97706, #6df916ff);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            color: var(--text-primary);
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-body {
+                padding: 1.5rem 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Input states */
+        .form-control.is-invalid {
+            border-color: var(--danger-color);
+        }
+
+        .form-control.is-valid {
+            border-color: var(--primary-color);
+        }
+
+        /* Loading state */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                <div class="icon-badge">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                Create Health Advisory
+            </h1>
+            <p>Issue a new climate-related health advisory for affected regions</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i class="fas fa-file-medical"></i>
+                    Advisory Details
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="info-badge">
+                    <i class="fas fa-info-circle"></i>
+                    All fields marked with asterisk (*) are required
+                </div>
+
+                <form method="post" id="advisoryForm">
+                    <!-- Title -->
+                    <div class="form-group">
+                        <label for="title" class="form-label">
+                            Advisory Title<span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="title" 
+                            name="title" 
+                            class="form-control" 
+                            placeholder="e.g., Heatwave Alert for Northern Regions"
+                            required
+                        >
+                        <div class="helper-text">
+                            <i class="fas fa-lightbulb"></i>
+                            Use a clear, descriptive title that communicates the urgency
+                        </div>
+                    </div>
+
+                    <!-- Priority and Region Row -->
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="priority" class="form-label">
+                                Priority Level<span class="required">*</span>
+                            </label>
+                            <select id="priority" name="priority" class="form-control" required>
+                                <option value="">Select priority level</option>
+                                <option value="low">Low - Informational</option>
+                                <option value="medium">Medium - Caution Advised</option>
+                                <option value="high">High - Immediate Action Required</option>
+                                <option value="critical">Critical - Emergency</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="region" class="form-label">
+                                Affected Region<span class="required">*</span>
+                            </label>
+                            <select id="region" name="region" class="form-control" required>
+                                <option value="">Select region</option>
+                                <option value="north">Northern Region</option>
+                                <option value="south">Southern Region</option>
+                                <option value="east">Eastern Region</option>
+                                <option value="west">Western Region</option>
+                                <option value="central">Central Region</option>
+                                <option value="nationwide">Nationwide</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Related Cause -->
+                    <div class="form-group">
+                        <label for="related_cause" class="form-label">
+                            Related Environmental Cause<span class="required">*</span>
+                        </label>
+                        <select id="related_cause" name="related_cause" class="form-control" required>
+                            <option value="">Select environmental cause</option>
+                            <option value="heatwave">Extreme Heat / Heatwave</option>
+                            <option value="air_pollution">Air Pollution</option>
+                            <option value="water_contamination">Water Contamination</option>
+                            <option value="flooding">Flooding</option>
+                            <option value="drought">Drought</option>
+                            <option value="wildfire">Wildfire Smoke</option>
+                            <option value="cold_wave">Extreme Cold</option>
+                            <option value="other">Other Climate Event</option>
+                        </select>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description" class="form-label">
+                            Description<span class="required">*</span>
+                        </label>
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            class="form-control" 
+                            placeholder="Describe the health risks, affected populations, and current situation..."
+                            required
+                        ></textarea>
+                        <div class="helper-text">
+                            <i class="fas fa-align-left"></i>
+                            Provide detailed information about the health advisory
+                        </div>
+                    </div>
+
+                    <!-- Preventive Measures -->
+                    <div class="form-group">
+                        <label for="preventive_measures" class="form-label">
+                            Preventive Measures<span class="required">*</span>
+                        </label>
+                        <textarea 
+                            id="preventive_measures" 
+                            name="preventive_measures" 
+                            class="form-control" 
+                            placeholder="List recommended actions and precautions for the public..."
+                            required
+                        ></textarea>
+                        <div class="helper-text">
+                            <i class="fas fa-shield-alt"></i>
+                            Include specific actions people should take to protect their health
+                        </div>
+                    </div>
+
+                    <!-- Expiration Date -->
+                    <div class="form-group">
+                        <label for="expires_at" class="form-label">
+                            Expiration Date
+                        </label>
+                        <input 
+                            type="datetime-local" 
+                            id="expires_at" 
+                            name="expires_at" 
+                            class="form-control"
+                        >
+                        <div class="helper-text">
+                            <i class="fas fa-calendar-times"></i>
+                            Optional: Set when this advisory should automatically expire
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Publish Advisory
+                        </button>
+                        <a href="#" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form validation and interaction enhancements
+        document.getElementById('advisoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('.btn-primary');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            // Simulate form submission (replace with actual form submission)
+            setTimeout(() => {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                alert('Advisory published successfully!');
+            }, 2000);
+        });
+
+        // Real-time validation
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.hasAttribute('required')) {
+                    if (this.value.trim() === '') {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    } else {
+                        this.classList.add('is-valid');
+                        this.classList.remove('is-invalid');
+                    }
+                }
+            });
+
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid') && this.value.trim() !== '') {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
