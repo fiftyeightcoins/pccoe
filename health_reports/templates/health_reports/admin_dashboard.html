@@ -1,0 +1,532 @@
+{% extends 'health_reports/base.html' %}
+
+
+{% comment %} {% extends 'health_reports/base.html' %}
+
+{% block title %}Admin Dashboard - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h4>{{ pending_count }}</h4>
+                    <p class="text-muted mb-0">Pending Review</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <h4>{{ verified_count }}</h4>
+                    <p class="text-muted mb-0">Verified</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h4>{{ resolved_count }}</h4>
+                    <p class="text-muted mb-0">Resolved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <a href="{% url 'create_advisory' %}" class="btn btn-primary">
+                        <i class="fas fa-bullhorn"></i> New Advisory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Submitted Reports</h4>
+                <form method="get" class="d-flex">
+                    <select name="status" class="form-select me-2" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>Verified</option>
+                        <option value="investigating" {% if status_filter == 'investigating' %}selected{% endif %}>Investigating</option>
+                        <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if reports %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Reporter</th>
+                            <th>Disease</th>
+                            <th>Location</th>
+                            <th>Cause</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td>#{{ report.id }}</td>
+                            <td>{{ report.reporter.get_full_name }}</td>
+                            <td>{{ report.get_disease_type_display }}</td>
+                            <td>{{ report.location }}</td>
+                            <td><small>{{ report.get_environmental_cause_display }}</small></td>
+                            <td>
+                                {% if report.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">{{ report.get_status_display }}</span>
+                                {% elif report.status == 'verified' %}
+                                <span class="badge bg-info">{{ report.get_status_display }}</span>
+                                {% elif report.status == 'investigating' %}
+                                <span class="badge bg-primary">{{ report.get_status_display }}</span>
+                                {% elif report.status == 'resolved' %}
+                                <span class="badge bg-success">{{ report.get_status_display }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ report.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ report.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'report_detail' report.id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> Review
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="p-4 text-center text-muted">
+                No reports found with the selected filter.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} {% endcomment %}
+
+
+
+{% block title %}Admin Dashboard - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .admin-wrapper {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .admin-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .admin-header h2 {
+        margin: 0;
+        color: #2e7d32;
+        font-weight: 600;
+        font-size: 2rem;
+    }
+    
+    .admin-icon {
+        font-size: 2.5rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+        transition: all 0.3s ease;
+        border: none;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.15);
+    }
+    
+    .stat-card h4 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card p {
+        margin: 0;
+        color: #616161;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    
+    .stat-card-warning {
+        border-left: 4px solid #fbc02d;
+    }
+    
+    .stat-card-warning h4 {
+        color: #f57f17;
+    }
+    
+    .stat-card-info {
+        border-left: 4px solid #42a5f5;
+    }
+    
+    .stat-card-info h4 {
+        color: #1976d2;
+    }
+    
+    .stat-card-success {
+        border-left: 4px solid #66bb6a;
+    }
+    
+    .stat-card-success h4 {
+        color: #2e7d32;
+    }
+    
+    .action-card {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        transition: all 0.3s ease;
+        border: none;
+        margin-bottom: 1rem;
+    }
+    
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn-advisory {
+        background: white;
+        color: #2e7d32;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-advisory:hover {
+        background: #f1f8e9;
+        color: #1b5e20;
+        transform: scale(1.05);
+    }
+    
+    .reports-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+        border: none;
+        overflow: hidden;
+    }
+    
+    .reports-card-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+    
+    .reports-card-header h4 {
+        margin: 0;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .form-select {
+        background: white;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        color: #2e7d32;
+        min-width: 180px;
+    }
+    
+    .form-select:focus {
+        border-color: #43a047;
+        box-shadow: 0 0 0 0.2rem rgba(67, 160, 71, 0.15);
+        outline: none;
+    }
+    
+    .table {
+        margin: 0;
+    }
+    
+    .table thead {
+        background: #f1f8e9;
+    }
+    
+    .table thead th {
+        color: #2e7d32;
+        font-weight: 600;
+        border: none;
+        padding: 1rem;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #e8f5e9;
+    }
+    
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #424242;
+    }
+    
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+    
+    .status-pending {
+        background: #fff9c4;
+        color: #f57f17;
+        border: 1px solid #fbc02d;
+    }
+    
+    .status-verified {
+        background: #b3e5fc;
+        color: #01579b;
+        border: 1px solid #4fc3f7;
+    }
+    
+    .status-investigating {
+        background: #c5cae9;
+        color: #283593;
+        border: 1px solid #7986cb;
+    }
+    
+    .status-resolved {
+        background: #c8e6c9;
+        color: #1b5e20;
+        border: 1px solid #66bb6a;
+    }
+    
+    .status-other {
+        background: #e0e0e0;
+        color: #424242;
+        border: 1px solid #9e9e9e;
+    }
+    
+    .btn-review {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        color: white;
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .btn-review:hover {
+        background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        transform: translateY(-1px);
+        color: white;
+    }
+    
+    .empty-state {
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state p {
+        color: #616161;
+        font-size: 1.1rem;
+    }
+    
+    .row {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+    }
+    
+    .col-md-3 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .form-select {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="admin-wrapper">
+    <div class="container-fluid">
+        <div class="admin-header">
+            <div class="admin-icon">🛡️</div>
+            <h2>Admin Dashboard</h2>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card stat-card-warning">
+                    <div class="card-body">
+                        <h4>{{ pending_count }}</h4>
+                        <p>⏳ Pending Review</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card stat-card-info">
+                    <div class="card-body">
+                        <h4>{{ verified_count }}</h4>
+                        <p>✓ Verified</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card stat-card-success">
+                    <div class="card-body">
+                        <h4>{{ resolved_count }}</h4>
+                        <p>✓ Resolved</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card action-card">
+                    <div class="card-body">
+                        <a href="{% url 'create_advisory' %}" class="btn-advisory">
+                            <i class="fas fa-bullhorn"></i> New Advisory
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card reports-card">
+            <div class="card-header reports-card-header">
+                <div class="header-content">
+                    <h4>📋 Submitted Reports</h4>
+                    <form method="get" class="d-flex">
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>Verified</option>
+                            <option value="investigating" {% if status_filter == 'investigating' %}selected{% endif %}>Investigating</option>
+                            <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if reports %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Reporter</th>
+                                <th>Disease</th>
+                                <th>Location</th>
+                                <th>Cause</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in reports %}
+                            <tr>
+                                <td><strong>#{{ report.id }}</strong></td>
+                                <td>{{ report.reporter.get_full_name }}</td>
+                                <td>{{ report.get_disease_type_display }}</td>
+                                <td>📍 {{ report.location }}</td>
+                                <td><small>{{ report.get_environmental_cause_display }}</small></td>
+                                <td>
+                                    {% if report.status == 'pending' %}
+                                    <span class="status-badge status-pending">{{ report.get_status_display }}</span>
+                                    {% elif report.status == 'verified' %}
+                                    <span class="status-badge status-verified">{{ report.get_status_display }}</span>
+                                    {% elif report.status == 'investigating' %}
+                                    <span class="status-badge status-investigating">{{ report.get_status_display }}</span>
+                                    {% elif report.status == 'resolved' %}
+                                    <span class="status-badge status-resolved">{{ report.get_status_display }}</span>
+                                    {% else %}
+                                    <span class="status-badge status-other">{{ report.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ report.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'report_detail' report.id %}" class="btn-review">
+                                        <i class="fas fa-eye"></i> Review
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    <p>No reports found with the selected filter.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

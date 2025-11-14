@@ -1,0 +1,210 @@
+import React, { useState } from 'react';
+import { Search, AlertCircle, Droplets, Wind, Thermometer, FileText, ChevronDown, MapPin, Activity } from 'lucide-react';
+
+const HospitalDashboard = () => {
+  const [selectedCity, setSelectedCity] = useState('Mumbai');
+  const [selectedHospital, setSelectedHospital] = useState(null);
+  
+  const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata'];
+  
+  const hospitals = [
+    { id: 1, name: 'City General Hospital', cases: 145, severity: 'high' },
+    { id: 2, name: 'Green Valley Medical Center', cases: 89, severity: 'medium' },
+    { id: 3, name: 'Metro Health Institute', cases: 203, severity: 'high' },
+    { id: 4, name: 'Sunrise Community Hospital', cases: 56, severity: 'low' },
+    { id: 5, name: 'Central District Clinic', cases: 112, severity: 'medium' }
+  ];
+
+  const reports = [
+    { id: 'P-2024-001', date: '2024-11-10', summary: 'Respiratory infection, moderate severity', hospital: 1 },
+    { id: 'P-2024-002', date: '2024-11-10', summary: 'Acute gastroenteritis, water-borne suspected', hospital: 1 },
+    { id: 'P-2024-003', date: '2024-11-09', summary: 'Skin irritation and allergic reaction', hospital: 1 },
+    { id: 'P-2024-004', date: '2024-11-09', summary: 'Severe respiratory distress, air quality related', hospital: 1 },
+    { id: 'P-2024-005', date: '2024-11-08', summary: 'Dehydration and heat exhaustion', hospital: 1 }
+  ];
+
+  const causes = [
+    { name: 'Air Quality Degradation', level: 'Critical', percentage: 45, icon: Wind, color: 'red' },
+    { name: 'High Temperature', level: 'Warning', percentage: 30, icon: Thermometer, color: 'orange' },
+    { name: 'Poor Water Quality', level: 'Moderate', percentage: 25, icon: Droplets, color: 'yellow' }
+  ];
+
+  const handleAction = (action) => {
+    alert(`Action Initiated: ${action}\n\nTask has been assigned to the relevant department.`);
+  };
+
+  const scrollToReports = () => {
+    document.getElementById('reports-section').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const getSeverityColor = (severity) => {
+    switch(severity) {
+      case 'high': return 'bg-red-100 border-red-300 text-red-800';
+      case 'medium': return 'bg-yellow-100 border-yellow-300 text-yellow-800';
+      case 'low': return 'bg-green-100 border-green-300 text-green-800';
+      default: return 'bg-gray-100 border-gray-300 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center gap-3">
+            <Activity className="w-8 h-8" />
+            <div>
+              <h1 className="text-3xl font-bold">Hospitals in This Area</h1>
+              <p className="text-green-100 text-sm mt-1">Disease Overview & Management System</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* City Selection */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <label className="flex items-center gap-2 text-gray-700 font-semibold mb-3">
+            <MapPin className="w-5 h-5 text-green-600" />
+            Select City or Area
+          </label>
+          <div className="relative">
+            <select 
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="w-full px-4 py-3 bg-gray-50 border-2 border-green-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent cursor-pointer"
+            >
+              {cities.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-4 w-5 h-5 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Hospital Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {hospitals.map(hospital => (
+            <div key={hospital.id} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-4">
+                <h3 className="text-white font-bold text-lg">{hospital.name}</h3>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-gray-600 text-sm">Reported Cases</span>
+                  <span className="text-3xl font-bold text-green-600">{hospital.cases}</span>
+                </div>
+                <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${getSeverityColor(hospital.severity)}`}>
+                  {hospital.severity.toUpperCase()} PRIORITY
+                </div>
+                <button 
+                  onClick={() => {
+                    setSelectedHospital(hospital.id);
+                    scrollToReports();
+                  }}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Reports
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Reports Section */}
+        <div id="reports-section" className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <FileText className="w-6 h-6 text-green-600" />
+            Disease Reports
+          </h2>
+          <div className="space-y-3">
+            {reports.map(report => (
+              <div key={report.id} className="border-2 border-green-100 rounded-lg p-4 hover:bg-green-50 transition-colors duration-200">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        {report.id}
+                      </span>
+                      <span className="text-sm text-gray-500">{report.date}</span>
+                    </div>
+                    <p className="text-gray-700">{report.summary}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Primary Causes Section */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <AlertCircle className="w-6 h-6 text-green-600" />
+            Detected Primary Causes
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {causes.map(cause => {
+              const Icon = cause.icon;
+              const colorClasses = {
+                red: 'from-red-500 to-red-600',
+                orange: 'from-orange-500 to-orange-600',
+                yellow: 'from-yellow-500 to-yellow-600'
+              };
+              
+              return (
+                <div key={cause.name} className="border-2 border-green-100 rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${colorClasses[cause.color]} rounded-full flex items-center justify-center mb-4 mx-auto`}>
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-gray-800 text-center mb-2">{cause.name}</h3>
+                  <p className="text-center text-sm text-gray-600 mb-3">{cause.level} Level</p>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`bg-gradient-to-r ${colorClasses[cause.color]} h-2 rounded-full transition-all duration-500`}
+                      style={{ width: `${cause.percentage}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-center text-sm font-semibold text-gray-700 mt-2">{cause.percentage}% Impact</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Admin Actions */}
+        <div className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <AlertCircle className="w-6 h-6" />
+            Admin Actions
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button 
+              onClick={() => handleAction('Maintain Air Quality')}
+              className="bg-white hover:bg-green-50 text-green-700 font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 shadow-md hover:shadow-xl"
+            >
+              <Wind className="w-5 h-5" />
+              Maintain Air Quality
+            </button>
+            <button 
+              onClick={() => handleAction('Check Water Quality')}
+              className="bg-white hover:bg-green-50 text-green-700 font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 shadow-md hover:shadow-xl"
+            >
+              <Droplets className="w-5 h-5" />
+              Check Water Quality
+            </button>
+            <button 
+              onClick={() => handleAction('Issue Public Health Advisory')}
+              className="bg-white hover:bg-green-50 text-green-700 font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 shadow-md hover:shadow-xl"
+            >
+              <AlertCircle className="w-5 h-5" />
+              Issue Health Advisory
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default HospitalDashboard;

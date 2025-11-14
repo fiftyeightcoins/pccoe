@@ -1,0 +1,341 @@
+
+{% extends 'health_reports/base.html' %}
+
+{% comment %} {% extends 'health_reports/base.html' %}
+
+{% block title %}Submit Report - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3><i class="fas fa-file-medical"></i> Submit Health Report</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Please provide detailed information about the health issue. This will help health officials assess and respond to environmental health concerns in your area.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_disease_type" class="form-label">Disease/Condition Type *</label>
+                                {{ form.disease_type }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_environmental_cause" class="form-label">Suspected Environmental Cause *</label>
+                                {{ form.environmental_cause }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_symptoms" class="form-label">Symptoms Description *</label>
+                            {{ form.symptoms }}
+                            <small class="form-text text-muted">Describe the symptoms in detail</small>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_location" class="form-label">Location *</label>
+                                {{ form.location }}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="id_latitude" class="form-label">Latitude (Optional)</label>
+                                {{ form.latitude }}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="id_longitude" class="form-label">Longitude (Optional)</label>
+                                {{ form.longitude }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_affected_count" class="form-label">Number of People Affected</label>
+                            {{ form.affected_count }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_additional_notes" class="form-label">Additional Information</label>
+                            {{ form.additional_notes }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Submit Report</button>
+                        <a href="{% url 'user_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="number"], select, textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+{% block title %}Submit Report - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .submit-wrapper {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .submit-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .submit-card-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        color: white;
+        padding: 2rem;
+        border: none;
+    }
+    
+    .submit-card-header h3 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .header-icon {
+        font-size: 2rem;
+    }
+    
+    .submit-card-body {
+        padding: 2.5rem;
+    }
+    
+    .info-text {
+        background: #e8f5e9;
+        padding: 1.25rem;
+        border-radius: 10px;
+        color: #2e7d32;
+        margin-bottom: 2rem;
+        border-left: 4px solid #43a047;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .form-label {
+        color: #2e7d32;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-label.required::after {
+        content: " *";
+        color: #d32f2f;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #c8e6c9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #43a047;
+        box-shadow: 0 0 0 0.2rem rgba(67, 160, 71, 0.15);
+        outline: none;
+    }
+    
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-text {
+        color: #616161;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        border: none;
+        color: white;
+        padding: 0.875rem 2.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        margin-right: 1rem;
+    }
+    
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        color: white;
+    }
+    
+    .btn-cancel {
+        background: white;
+        color: #616161;
+        border: 2px solid #e0e0e0;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-cancel:hover {
+        background: #f5f5f5;
+        color: #424242;
+        border-color: #bdbdbd;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-col {
+        flex: 1;
+    }
+    
+    .form-col-3 {
+        flex: 0 0 calc(33.333% - 1rem);
+    }
+    
+    .form-col-6 {
+        flex: 0 0 calc(50% - 0.75rem);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .button-group {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #e8f5e9;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .form-col,
+        .form-col-3,
+        .form-col-6 {
+            flex: 1 1 100%;
+        }
+        
+        .btn-submit,
+        .btn-cancel {
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 0.75rem;
+        }
+    }
+</style>
+
+<div class="submit-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card submit-card">
+                    <div class="card-header submit-card-header">
+                        <h3>
+                            <span class="header-icon">📋</span>
+                            Submit Health Report
+                        </h3>
+                    </div>
+                    <div class="card-body submit-card-body">
+                        <p class="info-text">
+                            🌿 Please provide detailed information about the health issue. This will help health officials assess and respond to environmental health concerns in your area.
+                        </p>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label for="id_disease_type" class="form-label required">Disease/Condition Type</label>
+                                    {{ form.disease_type }}
+                                </div>
+                                <div class="form-col">
+                                    <label for="id_environmental_cause" class="form-label required">Suspected Environmental Cause</label>
+                                    {{ form.environmental_cause }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_symptoms" class="form-label required">Symptoms Description</label>
+                                {{ form.symptoms }}
+                                <small class="form-text">Describe the symptoms in detail</small>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col-6">
+                                    <label for="id_location" class="form-label required">Location</label>
+                                    {{ form.location }}
+                                </div>
+                                <div class="form-col-3">
+                                    <label for="id_latitude" class="form-label">Latitude (Optional)</label>
+                                    {{ form.latitude }}
+                                </div>
+                                <div class="form-col-3">
+                                    <label for="id_longitude" class="form-label">Longitude (Optional)</label>
+                                    {{ form.longitude }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_affected_count" class="form-label">Number of People Affected</label>
+                                {{ form.affected_count }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_additional_notes" class="form-label">Additional Information</label>
+                                {{ form.additional_notes }}
+                            </div>
+                            
+                            <div class="button-group">
+                                <button type="submit" class="btn-submit">Submit Report</button>
+                                <a href="{% url 'user_dashboard' %}" class="btn-cancel">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

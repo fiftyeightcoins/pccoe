@@ -1,0 +1,484 @@
+{% extends 'health_reports/base.html' %}
+
+
+{% comment %} {% extends 'health_reports/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron bg-light p-5 rounded mb-4">
+        <h1 class="display-4">Climate Health Tracker</h1>
+        <p class="lead">Monitoring and reporting the public health impacts of climate change through community engagement.</p>
+        <hr class="my-4">
+        <p>Join our community in tracking health issues related to environmental factors. Report cases, view analytics, and stay informed about health advisories.</p>
+        {% if not user.is_authenticated %}
+        <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">Get Started</a>
+        {% else %}
+        <a class="btn btn-success btn-lg" href="{% url 'submit_report' %}" role="button">Submit a Report</a>
+        {% endif %}
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-file-medical fa-3x text-primary mb-3"></i>
+                    <h3>{{ total_reports }}</h3>
+                    <p class="text-muted">Total Reports</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h3>{{ resolved_reports }}</h3>
+                    <p class="text-muted">Resolved Cases</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-bullhorn fa-3x text-warning mb-3"></i>
+                    <h3>{{ active_advisories }}</h3>
+                    <p class="text-muted">Active Advisories</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mb-3">Recent Health Advisories</h2>
+    {% if advisories %}
+    <div class="row">
+        {% for advisory in advisories %}
+        <div class="col-md-6 mb-3">
+            <div class="card border-{{ advisory.priority }}">
+                <div class="card-header bg-{{ advisory.priority }} text-white">
+                    <h5 class="mb-0">{{ advisory.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ advisory.description|truncatewords:30 }}</p>
+                    <p class="mb-1"><strong>Region:</strong> {{ advisory.region }}</p>
+                    <p class="mb-1"><strong>Priority:</strong> <span class="badge bg-{{ advisory.priority }}">{{ advisory.get_priority_display }}</span></p>
+                    <small class="text-muted">Issued: {{ advisory.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">No active health advisories at this time.</div>
+    {% endif %}
+</div>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+{% block content %}
+<style>
+    :root {
+        --primary-green: #10b981;
+        --dark-green: #059669;
+        --light-green: #d1fae5;
+        --accent-green: #34d399;
+        --bg-primary: #f0fdf4;
+        --text-primary: #064e3b;
+        --text-secondary: #6b7280;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --success: #10b981;
+    }
+
+    .climate-hero {
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        border-radius: 24px;
+        padding: 60px 40px;
+        margin-bottom: 40px;
+        color: white;
+        box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .climate-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        z-index: 0;
+    }
+
+    .climate-hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .climate-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .climate-hero .lead {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        opacity: 0.95;
+    }
+
+    .climate-hero hr {
+        border: 0;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        margin: 30px 0;
+    }
+
+    .climate-hero p {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+
+    .climate-btn {
+        display: inline-block;
+        padding: 16px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .climate-btn-primary {
+        background: white;
+        color: var(--primary-green);
+    }
+
+    .climate-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+        color: var(--primary-green);
+        text-decoration: none;
+    }
+
+    .climate-btn-success {
+        background: var(--accent-green);
+        color: white;
+    }
+
+    .climate-btn-success:hover {
+        background: var(--dark-green);
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .stat-card-modern {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        height: 100%;
+    }
+
+    .stat-card-modern:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+        border-color: var(--light-green);
+    }
+
+    .stat-card-modern i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .stat-card-modern i.text-primary { color: var(--primary-green); }
+    .stat-card-modern i.text-success { color: var(--success); }
+    .stat-card-modern i.text-warning { color: var(--warning); }
+
+    .stat-card-modern h3 {
+        font-size: 2.5rem;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .stat-card-modern p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .section-title-modern {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .section-title-modern::before {
+        content: '';
+        width: 5px;
+        height: 35px;
+        background: var(--primary-green);
+        border-radius: 10px;
+    }
+
+    .advisory-card-modern {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        margin-bottom: 25px;
+        height: calc(100% - 25px);
+    }
+
+    .advisory-card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .advisory-header-modern {
+        padding: 25px 30px;
+        color: white;
+        font-weight: 600;
+    }
+
+    .advisory-header-modern.border-danger,
+    .advisory-header-modern.bg-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .advisory-header-modern.border-warning,
+    .advisory-header-modern.bg-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .advisory-header-modern.border-success,
+    .advisory-header-modern.bg-success {
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    }
+
+    .advisory-header-modern.border-info,
+    .advisory-header-modern.bg-info {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .advisory-header-modern.border-primary,
+    .advisory-header-modern.bg-primary {
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    }
+
+    .advisory-header-modern h5 {
+        font-size: 1.3rem;
+        margin: 0;
+    }
+
+    .advisory-body-modern {
+        padding: 30px;
+    }
+
+    .advisory-body-modern p {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+
+    .advisory-meta-modern {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .advisory-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .advisory-meta-item strong {
+        color: var(--text-primary);
+        min-width: 80px;
+    }
+
+    .badge-modern {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .badge-modern.bg-danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-modern.bg-warning {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-modern.bg-success {
+        background: var(--light-green);
+        color: var(--dark-green);
+    }
+
+    .badge-modern.bg-info {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-modern.bg-primary {
+        background: var(--light-green);
+        color: var(--dark-green);
+    }
+
+    .advisory-date-modern {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .alert-modern {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #1e40af;
+        padding: 25px 30px;
+        border-radius: 16px;
+        border-left: 5px solid #3b82f6;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 1.05rem;
+    }
+
+    .alert-modern i {
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .climate-hero h1 {
+            font-size: 2rem;
+        }
+
+        .climate-hero .lead {
+            font-size: 1.1rem;
+        }
+
+        .stat-card-modern h3 {
+            font-size: 2rem;
+        }
+
+        .climate-hero {
+            padding: 40px 25px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="climate-hero">
+        <div class="climate-hero-content">
+            <h1><i class="fas fa-leaf"></i> Climate Health Tracker</h1>
+            <p class="lead">Monitoring and reporting the public health impacts of climate change through community engagement.</p>
+            <hr>
+            <p>Join our community in tracking health issues related to environmental factors. Report cases, view analytics, and stay informed about health advisories.</p>
+            {% if not user.is_authenticated %}
+            <a class="climate-btn climate-btn-primary" href="{% url 'register' %}" role="button">
+                <i class="fas fa-user-plus"></i> Get Started
+            </a>
+            {% else %}
+            <a class="climate-btn climate-btn-success" href="{% url 'submit_report' %}" role="button">
+                <i class="fas fa-file-medical"></i> Submit a Report
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="stat-card-modern">
+                <i class="fas fa-file-medical text-primary"></i>
+                <h3>{{ total_reports }}</h3>
+                <p>Total Reports</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stat-card-modern">
+                <i class="fas fa-check-circle text-success"></i>
+                <h3>{{ resolved_reports }}</h3>
+                <p>Resolved Cases</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stat-card-modern">
+                <i class="fas fa-bullhorn text-warning"></i>
+                <h3>{{ active_advisories }}</h3>
+                <p>Active Advisories</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title-modern">Recent Health Advisories</h2>
+    {% if advisories %}
+    <div class="row">
+        {% for advisory in advisories %}
+        <div class="col-md-6">
+            <div class="advisory-card-modern">
+                <div class="advisory-header-modern border-{{ advisory.priority }} bg-{{ advisory.priority }}">
+                    <h5>{{ advisory.title }}</h5>
+                </div>
+                <div class="advisory-body-modern">
+                    <p>{{ advisory.description|truncatewords:30 }}</p>
+                    <div class="advisory-meta-modern">
+                        <div class="advisory-meta-item">
+                            <strong>Region:</strong>
+                            <span>{{ advisory.region }}</span>
+                        </div>
+                        <div class="advisory-meta-item">
+                            <strong>Priority:</strong>
+                            <span class="badge-modern bg-{{ advisory.priority }}">{{ advisory.get_priority_display }}</span>
+                        </div>
+                    </div>
+                    <div class="advisory-date-modern">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Issued: {{ advisory.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert-modern">
+        <i class="fas fa-info-circle"></i>
+        <span>No active health advisories at this time.</span>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

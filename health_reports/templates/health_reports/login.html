@@ -1,0 +1,172 @@
+{% extends 'health_reports/base.html' %}
+
+{% comment %} 
+
+{% block title %}Login - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Login</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" id="id_username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" id="id_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <a href="{% url 'register' %}" class="btn btn-link">Don't have an account? Register</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% endcomment %}
+
+
+
+
+{% block title %}Login - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        padding: 2rem 0;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
+        border: none;
+        overflow: hidden;
+    }
+    
+    .login-card-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border: none;
+    }
+    
+    .login-card-header h3 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+    
+    .login-card-header p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+    
+    .login-card-body {
+        padding: 2.5rem;
+    }
+    
+    .form-label {
+        color: #2e7d32;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border: 2px solid #c8e6c9;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #43a047;
+        box-shadow: 0 0 0 0.2rem rgba(67, 160, 71, 0.15);
+        outline: none;
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+    
+    .btn-login:hover {
+        background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        color: white;
+    }
+    
+    .register-link {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #2e7d32;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    
+    .register-link:hover {
+        color: #1b5e20;
+        text-decoration: underline;
+    }
+    
+    .eco-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card login-card">
+                    <div class="card-header login-card-header">
+                        <div class="eco-icon">🌱</div>
+                        <h3>Welcome Back</h3>
+                        <p>Climate Health Tracker</p>
+                    </div>
+                    <div class="card-body login-card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label">Username</label>
+                                <input type="text" name="username" class="form-control" id="id_username" required placeholder="Enter your username">
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_password" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" id="id_password" required placeholder="Enter your password">
+                            </div>
+                            <button type="submit" class="btn btn-login">Login</button>
+                            <a href="{% url 'register' %}" class="register-link">Don't have an account? Register here</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

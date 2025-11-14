@@ -1,0 +1,305 @@
+{% extends 'health_reports/base.html' %}
+{% comment %} 
+
+{% block title %}Create Advisory - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h3><i class="fas fa-bullhorn"></i> Create Health Advisory</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label">Advisory Title *</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_priority" class="form-label">Priority Level *</label>
+                                {{ form.priority }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_region" class="form-label">Affected Region *</label>
+                                {{ form.region }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_related_cause" class="form-label">Related Environmental Cause *</label>
+                            {{ form.related_cause }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">Description *</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_preventive_measures" class="form-label">Preventive Measures *</label>
+                            {{ form.preventive_measures }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_expires_at" class="form-label">Expiration Date (Optional)</label>
+                            {{ form.expires_at }}
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="fas fa-paper-plane"></i> Publish Advisory
+                        </button>
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="datetime-local"], select, textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+{% extends 'health_reports/base.html' %}
+
+{% block title %}Create Advisory - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .advisory-wrapper {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .advisory-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .advisory-card-header {
+        background: linear-gradient(135deg, #f57f17 0%, #fbc02d 100%);
+        color: #fff;
+        padding: 2rem;
+        border: none;
+    }
+    
+    .advisory-card-header h3 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .header-icon {
+        font-size: 2rem;
+    }
+    
+    .advisory-card-body {
+        padding: 2.5rem;
+    }
+    
+    .form-label {
+        color: #2e7d32;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-label::after {
+        content: "";
+    }
+    
+    input[type="text"],
+    input[type="datetime-local"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #c8e6c9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    input[type="text"]:focus,
+    input[type="datetime-local"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #fbc02d;
+        box-shadow: 0 0 0 0.2rem rgba(251, 192, 45, 0.15);
+        outline: none;
+    }
+    
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-col {
+        flex: 1;
+    }
+    
+    .btn-publish {
+        background: linear-gradient(135deg, #f57f17 0%, #fbc02d 100%);
+        border: none;
+        color: white;
+        padding: 0.875rem 2.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        margin-right: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-publish:hover {
+        background: linear-gradient(135deg, #e65100 0%, #f57f17 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 127, 23, 0.3);
+        color: white;
+    }
+    
+    .btn-cancel {
+        background: white;
+        color: #616161;
+        border: 2px solid #e0e0e0;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-cancel:hover {
+        background: #f5f5f5;
+        color: #424242;
+        border-color: #bdbdbd;
+    }
+    
+    .button-group {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #e8f5e9;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .form-col {
+            flex: 1 1 100%;
+        }
+        
+        .btn-publish,
+        .btn-cancel {
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 0.75rem;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="advisory-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card advisory-card">
+                    <div class="card-header advisory-card-header">
+                        <h3>
+                            <span class="header-icon">📢</span>
+                            Create Health Advisory
+                        </h3>
+                    </div>
+                    <div class="card-body advisory-card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="id_title" class="form-label">Advisory Title *</label>
+                                {{ form.title }}
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label for="id_priority" class="form-label">Priority Level *</label>
+                                    {{ form.priority }}
+                                </div>
+                                <div class="form-col">
+                                    <label for="id_region" class="form-label">Affected Region *</label>
+                                    {{ form.region }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_related_cause" class="form-label">Related Environmental Cause *</label>
+                                {{ form.related_cause }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_description" class="form-label">Description *</label>
+                                {{ form.description }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_preventive_measures" class="form-label">Preventive Measures *</label>
+                                {{ form.preventive_measures }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_expires_at" class="form-label">Expiration Date (Optional)</label>
+                                {{ form.expires_at }}
+                            </div>
+                            
+                            <div class="button-group">
+                                <button type="submit" class="btn-publish">
+                                    <i class="fas fa-paper-plane"></i> Publish Advisory
+                                </button>
+                                <a href="{% url 'admin_dashboard' %}" class="btn-cancel">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

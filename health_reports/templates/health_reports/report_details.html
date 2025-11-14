@@ -1,0 +1,619 @@
+
+{% extends 'health_reports/base.html' %}
+
+
+{% comment %} {% extends 'health_reports/base.html' %}
+
+{% block title %}Report #{{ report.id }} - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-medical"></i> Report #{{ report.id }}</h2>
+        <a href="{% if user.profile.is_admin %}{% url 'admin_dashboard' %}{% else %}{% url 'user_dashboard' %}{% endif %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Report Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Disease Type:</strong>
+                            <p>{{ report.get_disease_type_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Environmental Cause:</strong>
+                            <p>{{ report.get_environmental_cause_display }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Symptoms:</strong>
+                        <p>{{ report.symptoms }}</p>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Location:</strong>
+                            <p>{{ report.location }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Affected Count:</strong>
+                            <p>{{ report.affected_count }} people</p>
+                        </div>
+                    </div>
+                    {% if report.latitude and report.longitude %}
+                    <div class="mb-3">
+                        <strong>Coordinates:</strong>
+                        <p>{{ report.latitude }}, {{ report.longitude }}</p>
+                    </div>
+                    {% endif %}
+                    {% if report.additional_notes %}
+                    <div class="mb-3">
+                        <strong>Additional Notes:</strong>
+                        <p>{{ report.additional_notes }}</p>
+                    </div>
+                    {% endif %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Submitted By:</strong>
+                            <p>{{ report.reporter.get_full_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Submission Date:</strong>
+                            <p>{{ report.created_at|date:"F d, Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if report.admin_notes %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Admin Response</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ report.admin_notes }}</p>
+                    {% if report.verified_by %}
+                    <small class="text-muted">
+                        By {{ report.verified_by.get_full_name }} on {{ report.updated_at|date:"F d, Y H:i" }}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        {% if report.status == 'pending' %}
+                        <span class="badge bg-warning text-dark fs-6">{{ report.get_status_display }}</span>
+                        {% elif report.status == 'verified' %}
+                        <span class="badge bg-info fs-6">{{ report.get_status_display }}</span>
+                        {% elif report.status == 'investigating' %}
+                        <span class="badge bg-primary fs-6">{{ report.get_status_display }}</span>
+                        {% elif report.status == 'resolved' %}
+                        <span class="badge bg-success fs-6">{{ report.get_status_display }}</span>
+                        {% else %}
+                        <span class="badge bg-secondary fs-6">{{ report.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                    <p><strong>Last Updated:</strong><br>{{ report.updated_at|date:"F d, Y H:i" }}</p>
+                    {% if report.resolved_at %}
+                    <p><strong>Resolved On:</strong><br>{{ report.resolved_at|date:"F d, Y H:i" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.profile.is_admin and form %}
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Admin Actions</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_status" class="form-label">Update Status</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_admin_notes" class="form-label">Admin Notes/Response</label>
+                            {{ form.admin_notes }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save"></i> Update Report
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    select, textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+{% block title %}Report #{{ report.id }} - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-green: #10b981;
+        --dark-green: #059669;
+        --light-green: #d1fae5;
+        --accent-green: #34d399;
+        --soft-green: #ecfdf5;
+        --text-primary: #064e3b;
+        --text-secondary: #6b7280;
+        --border-light: #e5e7eb;
+    }
+
+    .report-header {
+        background: linear-gradient(135deg, var(--soft-green) 0%, #fff 100%);
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+    }
+
+    .report-header h2 {
+        color: var(--text-primary);
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .report-header h2 i {
+        color: var(--primary-green);
+    }
+
+    .btn-back {
+        background: white;
+        color: var(--text-primary);
+        border: 2px solid var(--light-green);
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-back:hover {
+        background: var(--light-green);
+        color: var(--dark-green);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        text-decoration: none;
+    }
+
+    .card-modern {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 25px;
+    }
+
+    .card-modern:hover {
+        box-shadow: 0 12px 32px rgba(16, 185, 129, 0.15);
+    }
+
+    .card-header-modern {
+        padding: 24px 30px;
+        border-bottom: 2px solid var(--light-green);
+        background: linear-gradient(135deg, var(--soft-green) 0%, white 100%);
+    }
+
+    .card-header-modern.primary {
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        color: white;
+        border-bottom: none;
+    }
+
+    .card-header-modern.info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        color: white;
+        border-bottom: none;
+    }
+
+    .card-header-modern.dark {
+        background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+        color: white;
+        border-bottom: none;
+    }
+
+    .card-header-modern h4,
+    .card-header-modern h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .card-body-modern {
+        padding: 30px;
+    }
+
+    .detail-row {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .detail-row strong {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .detail-row p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+
+    .detail-divider {
+        border: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--light-green) 0%, transparent 100%);
+        margin: 25px 0;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-badge.verified {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-badge.investigating {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .status-badge.resolved {
+        background: var(--light-green);
+        color: var(--dark-green);
+    }
+
+    .status-badge.rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .info-block {
+        background: var(--soft-green);
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+
+    .info-block strong {
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+    }
+
+    .info-block p {
+        margin: 0;
+        color: var(--text-secondary);
+    }
+
+    .form-modern {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-group-modern {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-label-modern {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .form-modern select,
+    .form-modern textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid var(--border-light);
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: var(--text-primary);
+    }
+
+    .form-modern select:focus,
+    .form-modern textarea:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .form-modern textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        color: white;
+        padding: 14px 24px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .admin-response {
+        background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 4px solid #06b6d4;
+    }
+
+    .admin-response p {
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        line-height: 1.7;
+    }
+
+    .admin-response small {
+        color: #64748b;
+        font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+        .report-header {
+            padding: 20px;
+        }
+
+        .report-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .card-body-modern {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="report-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap: 15px;">
+            <h2>
+                <i class="fas fa-file-medical"></i>
+                Report #{{ report.id }}
+            </h2>
+            <a href="{% if user.profile.is_admin %}{% url 'admin_dashboard' %}{% else %}{% url 'user_dashboard' %}{% endif %}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card-modern">
+                <div class="card-header-modern primary">
+                    <h4>Report Details</h4>
+                </div>
+                <div class="card-body-modern">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <strong>Disease Type:</strong>
+                                <p>{{ report.get_disease_type_display }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <strong>Environmental Cause:</strong>
+                                <p>{{ report.get_environmental_cause_display }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <strong>Symptoms:</strong>
+                        <p>{{ report.symptoms }}</p>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <strong>Location:</strong>
+                                <p>{{ report.location }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <strong>Affected Count:</strong>
+                                <p>{{ report.affected_count }} people</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if report.latitude and report.longitude %}
+                    <div class="detail-row">
+                        <strong>Coordinates:</strong>
+                        <p>{{ report.latitude }}, {{ report.longitude }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if report.additional_notes %}
+                    <div class="detail-row">
+                        <strong>Additional Notes:</strong>
+                        <p>{{ report.additional_notes }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <hr class="detail-divider">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <strong>Submitted By:</strong>
+                                <p>{{ report.reporter.get_full_name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <strong>Submission Date:</strong>
+                                <p>{{ report.created_at|date:"F d, Y H:i" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if report.admin_notes %}
+            <div class="card-modern">
+                <div class="card-header-modern info">
+                    <h5><i class="fas fa-comment-dots"></i> Admin Response</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div class="admin-response">
+                        <p>{{ report.admin_notes }}</p>
+                        {% if report.verified_by %}
+                        <small>
+                            <i class="fas fa-user-shield"></i> By {{ report.verified_by.get_full_name }} on {{ report.updated_at|date:"F d, Y H:i" }}
+                        </small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-modern">
+                <div class="card-header-modern">
+                    <h5><i class="fas fa-info-circle"></i> Status</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div class="mb-3">
+                        {% if report.status == 'pending' %}
+                        <span class="status-badge pending">{{ report.get_status_display }}</span>
+                        {% elif report.status == 'verified' %}
+                        <span class="status-badge verified">{{ report.get_status_display }}</span>
+                        {% elif report.status == 'investigating' %}
+                        <span class="status-badge investigating">{{ report.get_status_display }}</span>
+                        {% elif report.status == 'resolved' %}
+                        <span class="status-badge resolved">{{ report.get_status_display }}</span>
+                        {% else %}
+                        <span class="status-badge rejected">{{ report.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="info-block">
+                        <strong><i class="fas fa-clock"></i> Last Updated:</strong>
+                        <p>{{ report.updated_at|date:"F d, Y H:i" }}</p>
+                    </div>
+                    
+                    {% if report.resolved_at %}
+                    <div class="info-block">
+                        <strong><i class="fas fa-check-circle"></i> Resolved On:</strong>
+                        <p>{{ report.resolved_at|date:"F d, Y H:i" }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.profile.is_admin and form %}
+            <div class="card-modern">
+                <div class="card-header-modern dark">
+                    <h5><i class="fas fa-tools"></i> Admin Actions</h5>
+                </div>
+                <div class="card-body-modern">
+                    <form method="post" class="form-modern">
+                        {% csrf_token %}
+                        <div class="form-group-modern">
+                            <label for="id_status" class="form-label-modern">
+                                <i class="fas fa-toggle-on"></i> Update Status
+                            </label>
+                            {{ form.status }}
+                        </div>
+                        <div class="form-group-modern">
+                            <label for="id_admin_notes" class="form-label-modern">
+                                <i class="fas fa-sticky-note"></i> Admin Notes/Response
+                            </label>
+                            {{ form.admin_notes }}
+                        </div>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i> Update Report
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

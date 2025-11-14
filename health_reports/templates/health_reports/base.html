@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Climate Health Tracker{% endblock %}</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f1f8e9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%) !important;
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-brand i {
+            font-size: 1.6rem;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 0 0.25rem;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white !important;
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white !important;
+        }
+        
+        .dropdown-menu {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            transition: background-color 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            color: #1b5e20;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%);
+            color: #01579b;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            color: #f57f17;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+            color: #b71c1c;
+        }
+        
+        .btn-close {
+            filter: brightness(0.8);
+        }
+        
+        main {
+            flex: 1;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%) !important;
+            margin-top: auto;
+            box-shadow: 0 -2px 8px rgba(46, 125, 50, 0.2);
+        }
+        
+        footer p {
+            margin: 0;
+            opacity: 0.95;
+            font-size: 0.95rem;
+        }
+        
+        .eco-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-leaf"></i> Climate Health Tracker
+                <span class="eco-badge">🌍 Eco-Friendly</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'submit_report' %}">
+                                <i class="fas fa-plus-circle"></i> Submit Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'analytics' %}">
+                                <i class="fas fa-chart-line"></i> Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_dashboard' %}">
+                                <i class="fas fa-tachometer-alt"></i> My Dashboard
+                            </a>
+                        </li>
+                        {% if user.profile.is_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                                <i class="fas fa-user-shield"></i> Admin Panel
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus"></i> Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>
+                <i class="fas fa-leaf"></i> 
+                &copy; 2025 Climate Health Tracker. Monitoring health impacts of climate change.
+                <i class="fas fa-heart" style="color: #ff6b6b;"></i>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Climate Health Tracker{% endblock %}</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-heartbeat"></i> Climate Health Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'submit_report' %}">Submit Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'analytics' %}">Analytics</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_dashboard' %}">My Dashboard</a>
+                        </li>
+                        {% if user.profile.is_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin_dashboard' %}">Admin Panel</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>&copy; 2025 Climate Health Tracker. Monitoring health impacts of climate change.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> {% endcomment %}

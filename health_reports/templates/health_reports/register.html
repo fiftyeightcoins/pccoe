@@ -1,0 +1,344 @@
+
+{% extends 'health_reports/base.html' %}
+
+{% comment %} {% extends 'health_reports/base.html' %}
+
+{% block title %}Register - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Register New Account</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_username" class="form-label">Username *</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                <div class="text-danger">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_email" class="form-label">Email *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="text-danger">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_first_name" class="form-label">First Name *</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_last_name" class="form-label">Last Name *</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_password1" class="form-label">Password *</label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                <div class="text-danger">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_password2" class="form-label">Confirm Password *</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                <div class="text-danger">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_phone" class="form-label">Phone Number</label>
+                            {{ form.phone }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_role" class="form-label">Account Type *</label>
+                            {{ form.role }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_organization" class="form-label">Organization</label>
+                            {{ form.organization }}
+                            <small class="form-text text-muted">Required for Health Officials</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <a href="{% url 'login' %}" class="btn btn-link">Already have an account? Login</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="email"], input[type="password"], select, textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+{% block title %}Register - Climate Health Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .register-wrapper {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .register-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .register-card-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border: none;
+    }
+    
+    .register-card-header h3 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+    
+    .register-card-header p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+    
+    .eco-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .register-card-body {
+        padding: 2.5rem;
+    }
+    
+    .form-label {
+        color: #2e7d32;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-label::after {
+        content: "";
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #c8e6c9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #43a047;
+        box-shadow: 0 0 0 0.2rem rgba(67, 160, 71, 0.15);
+        outline: none;
+    }
+    
+    .text-danger {
+        color: #d32f2f;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .form-text {
+        color: #616161;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    .btn-register {
+        background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 2.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+    
+    .btn-register:hover {
+        background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        color: white;
+    }
+    
+    .login-link {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #2e7d32;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    
+    .login-link:hover {
+        color: #1b5e20;
+        text-decoration: underline;
+    }
+    
+    .row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .col-md-6 {
+        flex: 1;
+    }
+    
+    .mb-3 {
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .col-md-6 {
+            flex: 1 1 100%;
+        }
+    }
+</style>
+
+<div class="register-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card register-card">
+                    <div class="card-header register-card-header">
+                        <div class="eco-icon">🌱</div>
+                        <h3>Register New Account</h3>
+                        <p>Join our environmental health community</p>
+                    </div>
+                    <div class="card-body register-card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_username" class="form-label">Username *</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                    <div class="text-danger">{{ form.username.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_email" class="form-label">Email *</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_first_name" class="form-label">First Name *</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_last_name" class="form-label">Last Name *</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_password1" class="form-label">Password *</label>
+                                    {{ form.password1 }}
+                                    {% if form.password1.errors %}
+                                    <div class="text-danger">{{ form.password1.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_password2" class="form-label">Confirm Password *</label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                    <div class="text-danger">{{ form.password2.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_phone" class="form-label">Phone Number</label>
+                                {{ form.phone }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_role" class="form-label">Account Type *</label>
+                                {{ form.role }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_organization" class="form-label">Organization</label>
+                                {{ form.organization }}
+                                <small class="form-text">Required for Health Officials</small>
+                            </div>
+                            
+                            <button type="submit" class="btn-register">Register</button>
+                            <a href="{% url 'login' %}" class="login-link">Already have an account? Login here</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
